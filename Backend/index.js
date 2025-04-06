@@ -12,7 +12,7 @@ app.use(express.json());
 connectDB();
 
 // Use note routes
-app.use('/api', noteRoutes);
+app.use('/api/notes', noteRoutes);
 
 app.listen(3000,()=>{
     console.log("Server is running on port 3000")
