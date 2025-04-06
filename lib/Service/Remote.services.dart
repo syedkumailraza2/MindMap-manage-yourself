@@ -6,7 +6,7 @@ import 'package:mindmap/Model/note.model.dart';
 
 class RemoteServices {
   static var client = http.Client();
-  static String baseURL = 'https://notes-app-nu-lime.vercel.app/api';
+  static String baseURL = 'https://mind-map-manage-yourself.vercel.app/api';
 
  static Future<List<Note>> fetchNotes() async {
   var response = await client.get(
