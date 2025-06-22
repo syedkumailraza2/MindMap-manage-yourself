@@ -3,6 +3,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/get_instance.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:mindmap/Controller/notes.controller.dart';
+import 'package:mindmap/Theme/theme.dart';
 
 class CreatePage extends StatelessWidget {
   const CreatePage({super.key});
@@ -15,9 +16,9 @@ class CreatePage extends StatelessWidget {
     final TextEditingController tagsController = TextEditingController();
 
     return Scaffold(
-       backgroundColor: Color(0xFFE8DDCB),
+       backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Color(0xFFE8DDCB),
+        backgroundColor: AppColors.background,
         title: Text(
           'Create Note',
           style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
@@ -70,7 +71,7 @@ class CreatePage extends StatelessWidget {
               Center(
                 child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF907257), // Background color
+              backgroundColor: AppColors.primary, // Background color
               foregroundColor: Colors.white, // Text color
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10), // Set your desired border radius here

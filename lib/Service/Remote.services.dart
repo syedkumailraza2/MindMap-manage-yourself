@@ -1,16 +1,87 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mindmap/Model/note.model.dart';
+import 'package:mindmap/Model/user.model.dart';
 
 class RemoteServices {
+ static final GetStorage storage = GetStorage();
+ final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   static final Dio dio = Dio(
     BaseOptions(
-      baseUrl: 'https://mind-map-manage-yourself.vercel.app/api',
+      baseUrl: 'https://mindmap-manage-yourself.onrender.com',
     ),
   );
 
-  
+ static Future<bool> register({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final response = await dio.post(
+        '/user/register',
+        data: {
+          "name": name,
+          "email": email,
+          "password": password,
+        },
+      );
 
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Optional: save to GetStorage if needed
+        storage.write('user', response.data['user']);
+        return true;
+      }
+      return false;
+    } catch (e) {
+      print('❌ Register error: $e');
+      return false;
+    }
+  }
+
+  // Login
+  static Future<bool> login({
+  required String email,
+  required String password,
+}) async {
+  try {
+    final response = await dio.post(
+      '/user/login',
+      data: {
+        "email": email,
+        "password": password,
+      },
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final userJson = response.data['user'];
+      final user = AppUser.fromJson(userJson);
+
+      // Save user to GetStorage
+      storage.write('user', user.toJson());
+
+      return true;
+    } else {
+      return false;
+    }
+  } catch (e) {
+    print("Login Error: $e");
+    return false;
+  }
+}
+
+  // Read stored user (optional)
+  static AppUser? getStoredUser() {
+    final userData = storage.read('user');
+    if (userData != null) {
+      return AppUser.fromJson(Map<String, dynamic>.from(userData));
+    }
+    return null;
+  }
+  
   static Future<List<Note>> fetchNotes() async {
     try {
       final response = await dio.get('/notes');
@@ -21,6 +92,46 @@ class RemoteServices {
       throw Exception('❌ Failed to fetch notes');
     }
   }
+
+ static Future<UserCredential?> signinGoogle() async {
+  try {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    if (googleUser == null) return null; // user canceled
+
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    final newUser = await FirebaseAuth.instance.signInWithCredential(credential);
+    final response = await dio.post(
+      '/user/signinwithgoogle',
+      data: {
+        "email": newUser.user!.email,
+        "name": newUser.user!.displayName,
+      },
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final userJson = response.data['user'];
+      final user = AppUser.fromJson(userJson);
+
+      // Save user to GetStorage
+      storage.write('user', user.toJson());
+
+      return newUser;
+    } 
+
+  } catch (e) {
+    print('❌ Google Sign-In Error: $e');
+    return null;
+  }
+}
+
+  
 
   static Future<Note> fetchNoteById(String id) async {
     try {

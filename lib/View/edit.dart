@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mindmap/Controller/notes.controller.dart';
+import 'package:mindmap/Theme/theme.dart';
 
 class EditPage extends StatelessWidget {
   final String noteId;
@@ -25,9 +26,9 @@ class EditPage extends StatelessWidget {
     final TextEditingController tagsController = TextEditingController(text: initialTags.join(', '));
 
     return Scaffold(
-      backgroundColor: Color(0xFFE8DDCB),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Color(0xFFE8DDCB),
+        backgroundColor: AppColors.background,
         title: Text(
           'Edit Note',
           style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
@@ -79,7 +80,7 @@ class EditPage extends StatelessWidget {
             Center(
               child: ElevatedButton(
   style: ElevatedButton.styleFrom(
-    backgroundColor: Color(0xFF907257), // Background color
+    backgroundColor: AppColors.primary, // Background color
     foregroundColor: Colors.white, // Text color
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(10), // Set your desired border radius here

@@ -6,6 +6,7 @@ import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:mindmap/Controller/notes.controller.dart';
 import 'package:mindmap/View/create.dart';
 import 'package:mindmap/View/read.dart';
+import 'package:mindmap/Theme/theme.dart';
 
 class Home extends StatelessWidget {
   NoteController noteController = Get.put(NoteController());
@@ -21,11 +22,11 @@ class Home extends StatelessWidget {
           Icons.add,
           color: Colors.white,
         ),
-        backgroundColor: Color(0xFF907257),
+        backgroundColor: AppColors.primary,
       ),
-      backgroundColor: Color(0xFFE8DDCB),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Color(0xFFE8DDCB),
+        backgroundColor: AppColors.background,
         title: Text(
           'MindMap',
           style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
@@ -84,7 +85,7 @@ Widget noteWidget(noteId, String noteTitle, noteContent, noteTag1, noteTag2) {
             decoration: BoxDecoration(
               border: Border.all(color: Colors.black),
               borderRadius: BorderRadius.circular(10),
-              color: Color(0xFFE8DDCB),
+              color: AppColors.background,
             ),
             padding: EdgeInsets.symmetric(horizontal: 10),
             child: Padding(
@@ -112,7 +113,7 @@ Widget noteWidget(noteId, String noteTitle, noteContent, noteTag1, noteTag2) {
                         padding:
                             EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: Color(0xFF907257),
+                          color: AppColors.primary,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
@@ -127,7 +128,7 @@ Widget noteWidget(noteId, String noteTitle, noteContent, noteTag1, noteTag2) {
                         padding:
                             EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: Color(0xFF907257),
+                          color: AppColors.primary,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(

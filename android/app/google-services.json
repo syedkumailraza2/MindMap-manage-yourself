@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "66999794563",
+    "project_id": "mindmap-19f5d",
+    "storage_bucket": "mindmap-19f5d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:66999794563:android:475d37ed11341fd28294b6",
+        "android_client_info": {
+          "package_name": "com.example.mindmap"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDt_uGCatyU6_M2L_5oTA_MNT620ZiE9cI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

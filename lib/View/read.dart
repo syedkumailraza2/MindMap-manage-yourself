@@ -5,6 +5,7 @@ import 'package:get/get_navigation/get_navigation.dart';
 import 'package:mindmap/Controller/notes.controller.dart';
 import 'package:mindmap/View/edit.dart';
 import 'package:mindmap/View/home.dart';
+import 'package:mindmap/Theme/theme.dart';
 
 class ReadPage extends StatelessWidget {
 NoteController noteController = Get.put(NoteController());
@@ -27,9 +28,9 @@ NoteController noteController = Get.put(NoteController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFE8DDCB),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Color(0xFFE8DDCB),
+        backgroundColor: AppColors.background,
         title: Text(
           noteTitle,
           style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),

@@ -24,7 +24,8 @@ const register = async (req,res)=>{
         const newUser = new User({
             email,
             name,
-            password: hashedPassword
+            password: hashedPassword,
+            provider: 'Custom'
         })
         await newUser.save()
 
@@ -47,7 +48,7 @@ const login = async (req,res)=>{
             res.status(400).json({ message: 'Invalid password'});
         }
 
-        res.status(201).json({ message: 'User Login successfully', user: existingUser });
+        res.status(200).json({ message: 'User Login successfully', user: existingUser });
 
     } catch (error) {
         console.log('error while login:',error);
@@ -55,4 +56,26 @@ const login = async (req,res)=>{
     }
 }
 
-export {register, login}
+const signInwithGoogle = async (req,res)=>{
+    try {
+        const { email, name } = req.body
+        const existingUser = await User.findOne({ email });
+        if (!existingUser) {
+            const newUser = new User({
+            email,
+            name,
+            provider: 'Google'
+        })
+        await newUser.save()
+
+        res.status(201).json({ message: 'User registered successfully', user: newUser });
+        }
+        res.status(200).json({ message: 'User Login successfully', user: existingUser });
+
+    } catch (error) {
+        console.log('error while signin with google:',error);
+        res.status(500).json({ message: 'Error signin with google', error: error.message });
+    }
+}
+
+export {register, login, signInwithGoogle}
