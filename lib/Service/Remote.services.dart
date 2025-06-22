@@ -1,82 +1,78 @@
 import 'dart:convert';
-
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'package:mindmap/Model/note.model.dart';
 
 class RemoteServices {
-  static var client = http.Client();
-  static String baseURL = 'https://mind-map-manage-yourself.vercel.app/api';
-
- static Future<List<Note>> fetchNotes() async {
-  var response = await client.get(
-    Uri.parse('$baseURL/notes'),
+  static final Dio dio = Dio(
+    BaseOptions(
+      baseUrl: 'https://mind-map-manage-yourself.vercel.app/api',
+    ),
   );
-  if (response.statusCode != 200) {
-    throw Exception(
-        'Error while fetching Data: ' + response.statusCode.toString());
-  }
-  var jsonData = response.body;
-  print("API RESPONSE: ${notesFromJson(jsonData)}");
-  return notesFromJson(jsonData);
-}
 
-static Future<Note> fetchNoteById(String id) async {
-  final response = await http.get(Uri.parse('$baseURL/notes/$id'));
-
-  if (response.statusCode == 200) {
-    return noteFromJson(response.body); // Adjust this based on your model
-  } else {
-    throw Exception('Failed to load note');
-  }
-}
-
-  static Future<List<Note>?>? deleteNotes(noteId) async {
-    var response = await client.delete(
-      Uri.parse('$baseURL/notes/${noteId}'),
-    );
-    if (response.statusCode != 200) {
-      throw Exception(
-          'Error while fetching Deleting: ' + response.statusCode.toString());
+  static Future<List<Note>> fetchNotes() async {
+    try {
+      final response = await dio.get('/notes');
+      print('📦 fetchNotes response: ${response.data}');
+      return notesFromJson(jsonEncode(response.data));
+    } catch (e) {
+      print('❌ fetchNotes error: $e');
+      throw Exception('❌ Failed to fetch notes');
     }
-    return null;
   }
 
- static Future<Note> editNote(String noteId, String title, String content, List<String> tags) async {
-    var response = await client.put(
-      Uri.parse('$baseURL/notes/$noteId'),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({
-        "title": title,
-        "content": content,
-        "tags": tags,
-      }),
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception('Error while updating note: ${response.statusCode}');
+  static Future<Note> fetchNoteById(String id) async {
+    try {
+      final response = await dio.get('/notes/$id');
+      return noteFromJson(jsonEncode(response.data));
+    } catch (e) {
+      print("❌ fetchNoteById error: $e");
+      throw Exception('❌ Failed to fetch note by ID');
     }
-    
-    
-    return noteFromJson(response.body);
   }
 
-static Future<Note> createNote(String title, String content, List<String> tags) async {
-    var response = await client.post(
-      Uri.parse('$baseURL/notes/'),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({
-        "title": title,
-        "content": content,
-        "tags": tags,
-      }),
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception('Error while Adding note: ${response.statusCode}');
+  static Future<void> deleteNotes(String noteId) async {
+    try {
+      final response = await dio.delete('/notes/$noteId');
+      if (response.statusCode != 200) {
+        throw Exception('❌ Error deleting note: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("❌ deleteNotes error: $e");
+      throw Exception('❌ Failed to delete note');
     }
+  }
 
-    
-    return noteFromJson(response.body);
+  static Future<Note> editNote(String noteId, String title, String content, List<String> tags) async {
+    try {
+      final response = await dio.put(
+        '/notes/$noteId',
+        data: {
+          "title": title,
+          "content": content,
+          "tags": tags,
+        },
+      );
+      return noteFromJson(jsonEncode(response.data));
+    } catch (e) {
+      print("❌ editNote error: $e");
+      throw Exception('❌ Failed to edit note');
+    }
+  }
+
+  static Future<Note> createNote(String title, String content, List<String> tags) async {
+    try {
+      final response = await dio.post(
+        '/notes/',
+        data: {
+          "title": title,
+          "content": content,
+          "tags": tags,
+        },
+      );
+      return noteFromJson(jsonEncode(response.data));
+    } catch (e) {
+      print("❌ createNote error: $e");
+      throw Exception('❌ Failed to create note');
+    }
   }
 }
