@@ -5,6 +5,7 @@ import connectDB from "./DB/database.js";
 import noteRoutes from "./router/notes.router.js"
 import userRoutes from "./router/user.router.js";
 const app = express()
+const port = process.env.PORT || 3000
 
 
 // Middleware
@@ -22,7 +23,7 @@ app.get('/',(req,res)=>{
     res.send("Hello world!")
 })
 
-app.listen(3000,()=>{
+app.listen(port,()=>{
     console.log("Server is running on port 3000")
 })
 
