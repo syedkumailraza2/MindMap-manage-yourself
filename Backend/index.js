@@ -13,8 +13,8 @@ app.use(express.json());
 connectDB();
 
 // Use note routes
-app.use('/api/notes', noteRoutes);
-app.use('/api/user', userRoutes)
+app.use('/notes', noteRoutes);
+app.use('/user', userRoutes)
 
 app.get('/',(req,res)=>{
     console.log('Hello in console');
