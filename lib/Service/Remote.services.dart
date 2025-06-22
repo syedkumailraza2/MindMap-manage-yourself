@@ -9,6 +9,8 @@ class RemoteServices {
     ),
   );
 
+  
+
   static Future<List<Note>> fetchNotes() async {
     try {
       final response = await dio.get('/notes');
