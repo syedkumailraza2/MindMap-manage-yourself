@@ -6,7 +6,9 @@ import User from '../Model/user.model.js';
 export const createNote = async (req, res) => {
   try {
     const { title, content, tags, userId } = req.body;
-    const existingUser = await User.findById({ userId });
+    console.log(` Title: ${title}, Content: ${content}, Tags: ${tags}, userId: ${userId}`);
+    
+    const existingUser = await User.findById(userId); 
     if (!existingUser) {
       res.status(400).json({ message: 'User not Found'});
     }
@@ -15,6 +17,8 @@ export const createNote = async (req, res) => {
     await newNote.save();
     res.status(201).json({ message: 'Note created successfully', note: newNote });
   } catch (error) {
+    console.log('Error creating note: ',error);
+    
     res.status(500).json({ message: 'Error creating note', error: error.message });
   }
 };

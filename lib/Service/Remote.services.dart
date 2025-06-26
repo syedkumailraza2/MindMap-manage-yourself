@@ -10,7 +10,8 @@ class RemoteServices {
   static final GetStorage storage = GetStorage();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   static final Dio dio = Dio(
-    BaseOptions(baseUrl: 'https://mindmap-manage-yourself.onrender.com'),
+    // BaseOptions(baseUrl: 'https://mindmap-manage-yourself.onrender.com'),
+    BaseOptions(baseUrl: 'http://10.0.2.2:4000')
   );
 
   static Future<bool> register({
@@ -172,6 +173,7 @@ class RemoteServices {
     try {
       final user = storage.read('user');
       final userId = user['_id'];
+      print('User: $userId');
       final response = await dio.post(
         '/notes/',
         data: {"title": title, "content": content, "tags": tags, "userId": userId},
