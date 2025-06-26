@@ -7,15 +7,13 @@ import 'package:mindmap/Model/note.model.dart';
 import 'package:mindmap/Model/user.model.dart';
 
 class RemoteServices {
- static final GetStorage storage = GetStorage();
- final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  static final GetStorage storage = GetStorage();
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   static final Dio dio = Dio(
-    BaseOptions(
-      baseUrl: 'https://mindmap-manage-yourself.onrender.com',
-    ),
+    BaseOptions(baseUrl: 'https://mindmap-manage-yourself.onrender.com'),
   );
 
- static Future<bool> register({
+  static Future<bool> register({
     required String name,
     required String email,
     required String password,
@@ -23,11 +21,7 @@ class RemoteServices {
     try {
       final response = await dio.post(
         '/user/register',
-        data: {
-          "name": name,
-          "email": email,
-          "password": password,
-        },
+        data: {"name": name, "email": email, "password": password},
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -44,34 +38,31 @@ class RemoteServices {
 
   // Login
   static Future<bool> login({
-  required String email,
-  required String password,
-}) async {
-  try {
-    final response = await dio.post(
-      '/user/login',
-      data: {
-        "email": email,
-        "password": password,
-      },
-    );
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final response = await dio.post(
+        '/user/login',
+        data: {"email": email, "password": password},
+      );
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final userJson = response.data['user'];
-      final user = AppUser.fromJson(userJson);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final userJson = response.data['user'];
+        final user = AppUser.fromJson(userJson);
 
-      // Save user to GetStorage
-      storage.write('user', user.toJson());
+        // Save user to GetStorage
+        storage.write('user', user.toJson());
 
-      return true;
-    } else {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print("Login Error: $e");
       return false;
     }
-  } catch (e) {
-    print("Login Error: $e");
-    return false;
   }
-}
 
   // Read stored user (optional)
   static AppUser? getStoredUser() {
@@ -81,10 +72,13 @@ class RemoteServices {
     }
     return null;
   }
-  
+
   static Future<List<Note>> fetchNotes() async {
     try {
-      final response = await dio.get('/notes');
+      final user = storage.read('user');
+      final userId = user['_id'];
+      print('User: $userId');
+      final response = await dio.get('/notes/$userId');
       print('📦 fetchNotes response: ${response.data}');
       return notesFromJson(jsonEncode(response.data));
     } catch (e) {
@@ -93,45 +87,42 @@ class RemoteServices {
     }
   }
 
- static Future<UserCredential?> signinGoogle() async {
-  try {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+  static Future<UserCredential?> signinGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-    if (googleUser == null) return null; // user canceled
+      if (googleUser == null) return null; // user canceled
 
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
 
-    final newUser = await FirebaseAuth.instance.signInWithCredential(credential);
-    final response = await dio.post(
-      '/user/signinwithgoogle',
-      data: {
-        "email": newUser.user!.email,
-        "name": newUser.user!.displayName,
-      },
-    );
+      final newUser = await FirebaseAuth.instance.signInWithCredential(
+        credential,
+      );
+      final response = await dio.post(
+        '/user/signinwithgoogle',
+        data: {"email": newUser.user!.email, "name": newUser.user!.displayName},
+      );
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final userJson = response.data['user'];
-      final user = AppUser.fromJson(userJson);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final userJson = response.data['user'];
+        final user = AppUser.fromJson(userJson);
 
-      // Save user to GetStorage
-      storage.write('user', user.toJson());
+        // Save user to GetStorage
+        storage.write('user', user.toJson());
 
-      return newUser;
-    } 
-
-  } catch (e) {
-    print('❌ Google Sign-In Error: $e');
-    return null;
+        return newUser;
+      }
+    } catch (e) {
+      print('❌ Google Sign-In Error: $e');
+      return null;
+    }
   }
-}
-
-  
 
   static Future<Note> fetchNoteById(String id) async {
     try {
@@ -155,15 +146,16 @@ class RemoteServices {
     }
   }
 
-  static Future<Note> editNote(String noteId, String title, String content, List<String> tags) async {
+  static Future<Note> editNote(
+    String noteId,
+    String title,
+    String content,
+    List<String> tags,
+  ) async {
     try {
       final response = await dio.put(
         '/notes/$noteId',
-        data: {
-          "title": title,
-          "content": content,
-          "tags": tags,
-        },
+        data: {"title": title, "content": content, "tags": tags},
       );
       return noteFromJson(jsonEncode(response.data));
     } catch (e) {
@@ -172,15 +164,17 @@ class RemoteServices {
     }
   }
 
-  static Future<Note> createNote(String title, String content, List<String> tags) async {
+  static Future<Note> createNote(
+    String title,
+    String content,
+    List<String> tags,
+  ) async {
     try {
+      final user = storage.read('user');
+      final userId = user['_id'];
       final response = await dio.post(
         '/notes/',
-        data: {
-          "title": title,
-          "content": content,
-          "tags": tags,
-        },
+        data: {"title": title, "content": content, "tags": tags, "userId": userId},
       );
       return noteFromJson(jsonEncode(response.data));
     } catch (e) {

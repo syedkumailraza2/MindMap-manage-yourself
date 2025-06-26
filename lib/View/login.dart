@@ -113,11 +113,26 @@ class LoginScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 20),
-              Image.asset('assets/continue_google.png'),
+              GestureDetector(
+  onTap: () async {
+    final userCredential = await RemoteServices.signinGoogle();
+
+    if (userCredential != null) {
+      // TODO: Optional: Navigate to Home screen or store user data
+      print('✅ Google Sign-In successful!');
+      print('user Credential: $userCredential');
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Home()));
+    } else {
+      print('❌ Google Sign-In failed or cancelled');
+    }
+  },
+  child: Image.asset('assets/continue_google.png'),
+),
+
               const SizedBox(height: 20),
               GestureDetector(
                 onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=> SignupScreen()));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> SignupScreen()));
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

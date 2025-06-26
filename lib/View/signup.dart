@@ -146,7 +146,7 @@ class SignupScreen extends StatelessWidget {
       // TODO: Optional: Navigate to Home screen or store user data
       print('✅ Google Sign-In successful!');
       print('user Credential: $userCredential');
-      Navigator.push(context, MaterialPageRoute(builder: (context)=> Home()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Home()));
     } else {
       print('❌ Google Sign-In failed or cancelled');
     }
@@ -157,7 +157,7 @@ class SignupScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => LoginScreen()),
                     );
