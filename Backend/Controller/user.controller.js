@@ -59,6 +59,8 @@ const login = async (req,res)=>{
 const signInwithGoogle = async (req,res)=>{
     try {
         const { email, name } = req.body
+        console.log(`email: ${email}, name:${name}`);
+        
         const existingUser = await User.findOne({ email });
         if (!existingUser) {
             const newUser = new User({
@@ -67,7 +69,7 @@ const signInwithGoogle = async (req,res)=>{
             provider: 'Google'
         })
         await newUser.save()
-
+        console.log('User registered successfully')
         res.status(201).json({ message: 'User registered successfully', user: newUser });
         }
         res.status(200).json({ message: 'User Login successfully', user: existingUser });
